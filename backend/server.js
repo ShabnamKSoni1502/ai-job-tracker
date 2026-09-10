@@ -56,6 +56,6 @@ app.patch('/api/applications/:id', async (req, res) => {
   res.json(update.rows[0]);
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
