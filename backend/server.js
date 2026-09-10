@@ -8,13 +8,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Get all applications
 app.get('/api/applications', async (req, res) => {
-  const result = await pool.query('SELECT * FROM applications ORDER BY applied_date DESC');
-  res.json(result.rows);
+  try {
+    const result = await pool.query('SELECT * FROM applications ORDER BY applied_date DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('DB error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Add a new application, with AI analysis of the job description
